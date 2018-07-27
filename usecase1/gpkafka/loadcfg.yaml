@@ -1,0 +1,29 @@
+DATABASE: payables_db
+USER: gpadmin
+HOST: gpdbsne
+PORT: 5432
+KAFKA:
+   INPUT:
+      SOURCE:
+         BROKERS: kafka:9092
+         TOPIC: topic_for_gpkafka
+      COLUMNS:
+         - NAME: cust_id
+           TYPE: int
+         - NAME: month
+           TYPE: int
+         - NAME: expenses
+           TYPE: decimal(9,2)
+      FORMAT: csv
+      ERROR_LIMIT: 25
+   OUTPUT:
+      SCHEMA: payables
+      TABLE: expenses
+   COMMIT:
+      MAX_ROW: 1000
+      MINIMAL_INTERVAL: 30000
+
+
+   # OUTPUT:
+   #    SCHEMA: payables
+   #    TABLE: expenses

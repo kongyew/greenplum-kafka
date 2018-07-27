@@ -2,35 +2,33 @@
 The Pivotal Greenplum Database (GPDB) is an advanced, fully featured, open source data warehouse. It provides powerful and rapid analytics on petabyte scale data volumes. Uniquely geared toward big data analytics, Greenplum Database is powered by the world’s most advanced cost-based query optimizer delivering high analytical query performance on large data volumes.
 <https://pivotal.io/pivotal-greenplum>
 
-# How to use Greenplum (GPHDFS to read data from Hadoop (Cloudera)
+# How to use Greenplum to load data from Kafka
 
-This [repository](https://github.com/kongyew/greenplum-gphdfs-examples) demonstrates how to use GPHDFS to read text data from hadoop.
+This [repository](https://github.com/kongyew/greenplum-kafka) demonstrates how to use gpKafka to read  data from Kafka.
 
 # Table of Contents
 1. [Pre-requisites](#Pre-requisites)
 2. [Starting Docker-compose](#Starting Docker-compose)
-3. [Configure Greenplum](#Configure Greenplum)
-4. [Configure Cloudera](#Configure-Cloudera)
+3. [Configure Greenplum](#Configure-Greenplum)
+4. [Configure Kafka](#Configure-Kafka)
 
 
 
 ## Pre-requisites:
 - [docker-compose](http://docs.docker.com/compose)
-- [Cloudera docker image](https://hub.docker.com/r/cloudera/quickstart/)
+- [Kafka docker image](https://hub.docker.com/u/confluentinc/)
 - [GPDB 5.x OSS docker image](https://hub.docker.com/r/kochanpivotal/gpdb5oss/)
 
 ## Starting Docker-compose
-Once you have cloned this repository, you can run the command  `./runDocker.sh -t usecase1 -c up`, in order to start both Greenplum and Streamsets docker instances.
+Once you have cloned this repository, you can run the command  `./runDocker.sh -t usecase1 -c up`, in order to start both Greenplum and Kafka docker instances.
 
 The assumption: docker and docker-compose are already installed on your machine.
 
-### Run command to start both Greenplum and Cloudera instances
+### Run command to start both Greenplum and Kafka instances
 ```
 $ ./runDocker.sh -t usecase1 -c up
 WARNING: Found orphan containers (postgresql) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
 Recreating gpdbsne ... done
-Recreating quickstart.cloudera ... done
-Attaching to gpdbsne, quickstart.cloudera
 gpdbsne     | /etc/sysconfig/run-parts
 gpdbsne     | /usr/bin/run-parts
 gpdbsne     | Running /docker-entrypoint.d
@@ -47,92 +45,26 @@ For example:
 ```
 $ docker ps
 CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS                                                                                             NAMES
-06ed0ead09fd        cloudera/quickstart:latest   "/usr/bin/docker-qui…"   3 minutes ago       Up 4 minutes        0.0.0.0:2181->2181/tcp, 0.0.0.0:7077->7077/tcp, 0.0.0.0:7180->7180/tcp, 0.0.0.0:8020->8020/tcp, 0.0.0.0:8042->8042/tcp, 0.0.0.0:8080->8080/tcp, 0.0.0.0:8088->8088/tcp, 0.0.0.0:8888->8888/tcp, 0.0.0.0:8983->8983/tcp, 0.0.0.0:9090->9090/tcp, 0.0.0.0:9092->9092/tcp, 0.0.0.0:10002->10002/tcp, 0.0.0.0:11000->11000/tcp, 0.0.0.0:11443->11443/tcp, 0.0.0.0:16000-16001->16000-16001/tcp, 0.0.0.0:19888->19888/tcp, 0.0.0.0:50070->50070/tcp, 0.0.0.0:60010->60010/tcp, 0.0.0.0:8022->22/tcp, 0.0.0.0:42222->22/tcp, 0.0.0.0:9080->80/tcp   quickstart.cloudera
-22c87a7bc39d        kochanpivotal/gpdb5-pxf      "/docker-entrypoint.…"   4 minutes ago       Up 4 minutes        0.0.0.0:5005->5005/tcp, 0.0.0.0:5010->5010/tcp, 0.0.0.0:5432->5432/tcp, 0.0.0.0:40000-40002->40000-40002/tcp, 0.0.0.0:9022->22/tcp                                                                               gpdbsne
-
+80f13a74b2e7        confluentinc/cp-kafka:4.0.0       "/etc/confluent/dock…"   About an hour ago   Up About an hour    0.0.0.0:9092->9092/tcp                                                                                                               kafka
+e56cfb32a775        kochanpivotal/gpdb5-pxf           "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:5005->5005/tcp, 0.0.0.0:5010->5010/tcp, 0.0.0.0:5432->5432/tcp, 0.0.0.0:40000-40002->40000-40002/tcp, 0.0.0.0:9022->22/tcp   gpdbsne
+9e74d2173a7f        confluentinc/cp-zookeeper:4.0.0   "/etc/confluent/dock…"   About an hour ago   Up About an hour    2888/tcp, 0.0.0.0:2181->2181/tcp, 3888/tcp                                                                                           zookeeper                                                                       gpdbsne
 root@gpdbsne:/#
 
 ```
 
-### How to access Cloudera docker instance:
-You can use this command `docker exec -it quickstart.cloudera bin/bash` to access Cloudera docker instance.
+### How to access Kafka docker instance:
+You can use this command `docker exec -it Kafka bin/bash` to access Kafka docker instance.
 
 For example:
 ```
-$ docker exec -it quickstart.cloudera bin/bash
-[root@quickstart /]#
+$ docker exec -it Kafka bin/bash
+[root@kafka /]#
 ```
 
 ## Configure Greenplum
 Once you have access to Greenplum docker instance, you can create database, table with some sample data.
 
-1. Start GPDB instance:
-Use the command 'startGPDB.sh'
-```
-root@gpdbsne# startGPDB.sh
-SSHD isn't running
- * Starting OpenBSD Secure Shell server sshd                             [ OK ]
-SSHD is running...
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Starting gpstart with args: -a
-20180419:21:15:09:000094 gpstart:gpdbsne:gpadmin-[INFO]:-Gathering information and validating the environment...
-...
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[INFO]:-Have lock file /tmp/.s.PGSQL.5432 and a process running on port 5432
-20180419:21:15:18:000247 gpstart:gpdbsne:gpadmin-[ERROR]:-gpstart error: Master instance process running
-```
-2. Download Hadoop distribution and [configure Greenplum to use Hadoop distribution](https://gpdb.docs.pivotal.io/570/admin_guide/external/g-one-time-hdfs-protocol-installation.html).
-
-Or you can use these scripts to automate the setup process.
-
-#### Download Hadoop files
-This script downloads hadoop tar file and unzip the file on the local directory. You can manually select different hadoop distributions by editing VERSION.
-```
-[gpadmin@gpdbsne setup]$ ./DownloadHadoopTarGz.sh
-Using ./HADOOP
---2018-05-07 22:13:49--  http://apache.claz.org/hadoop/common/hadoop-2.7.6/hadoop-2.7.6.tar.gz
-Resolving apache.claz.org (apache.claz.org)... 216.245.218.171
-Connecting to apache.claz.org (apache.claz.org)|216.245.218.171|:80... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 216745683 (207M) [application/x-gzip]
-Saving to: './HADOOP/hadoop-2.7.6.tar.gz.2'
-
-17% [======>                                ] 38,927,384  9.53MB/s  eta 21s  
-```
-#### Setup Hadoop files
-
-This script install the hadoop files under /usr/local/hadoop
-```
-[gpadmin@gpdbsne setup]$ ./SetupHadoopTarGz.sh
-Using ./HADOOP
-CreateHadoopDir:  ./HADOOP/hadoop-2.7.6.tar.gz
-```
-
-#### Setup Hadoop distribution and Hadoop setting for Greenplum, and setup Java
-
-This script install the hadoop files under /usr/local/hadoop
-```
-[gpadmin@gpdbsne setup]$ ./SetupGPHDFS.sh -i cdh5
-export HADOOP_USER_NAME=gpadmin
-export PATH=/usr/local/greenplum-db/./bin:/usr/local/greenplum-db/./ext/python/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:.:/sbin:/bin
-SSHD is running
-export HADOOP_USER_NAME=gpadmin
-Using delaybeforesend 0.05 and prompt_validation_timeout 1.0
-
-[Reset ...]
-[INFO] login gpdbsne
-[gpdbsne] echo 'export HADOOP_USER_NAME=gpadmin' >> /home/gpadmin/.bash_profile
-[INFO] completed successfully
-...
-[Reset ...]
-[INFO] login gpdbsne
-[gpdbsne] gpconfig -s gp_hadoop_target_version
-[gpdbsne] Values on all segments are consistent
-[gpdbsne] GUC          : gp_hadoop_target_version
-[gpdbsne] Master  value: mpr
-[gpdbsne] Segment value: mpr
-[INFO] completed successfully
-```
-
-##### Create sample database with the name "gphdfs_db"
+1. ##### Create sample database with the name "gphdfs_db"
 The scripts to create database and sample data is found at `/code/usercase1/data`.
 
 Next, run the command '/code/usecase1/data/setupDB.sh'
@@ -155,57 +87,144 @@ $ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
      0
 (1 row)
 ```
-## Configure Cloudera
-This section describes how to setup Cloudera.
+## Configure Kafka
+This section describes how to setup Kafka.
 
-
-
-
-### Setup example data on cloudera
-1. You can use this command `docker exec -it quickstart.cloudera bin/bash` to access Cloudera docker instance.
+### Setup example data on Kafka
+1. You can use this command `docker exec -it Kafka bin/bash` to access Kafka docker instance.
 For example:
 ```
-$ docker exec -it quickstart.cloudera bin/bash
-[root@quickstart /]#
+$ docker exec -it Kafka bin/bash
+[root@Kafka /]#
 ```
-2. This script `setupHdfsTextSimpleExample.sh` creates sample text file.
+2. This script `create_topic.sh` creates sample data for this topic "topic_for_gpkafka".
 ```
-[root@quickstart cloudera]# cd /code/usecase1/cloudera
-[root@quickstart cloudera]#[root@quickstart cloudera]# ./setupHdfsTextSimpleExample.sh
-Using root to run this script.
-Found hadoop /data directory
-Recursively delete files under /data
-Deleted /data
-## gphdfs_hdfs_simple.txt is created under this directory /data/gphdfs_examples/
-Found 1 items
--rw-r--r--   1 root supergroup        100 2018-05-07 22:29 /data/gphdfs_examples/gphdfs_hdfs_simple.txt
-[root@quickstart cloudera]#
+[root@kafka:/# cd /code/kafka
+root@kafka:/code/kafka# ls
+consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
+root@kafka:/code/kafka# ./create_topic.sh
+WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+Created topic "topic_for_gpkafka".
+```
+3. Run this script '/code/kafka/produce_100data.sh ' to generate data
+
+```
+root@kafka:/code/kafka# ls
+consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
+root@kafka:/code/kafka# ./produce_100data.sh
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ```
 
-## How to use PSQL to read data via GPHDFS
+## How to use gpkafka to load data from Kafka
+Make sure you are accessing GPDB docker instance.
+1. Use `docker exec -it gpdbsne bin/bash` to access GPDB instance.
+
+2. Use `su - gpadmin` to create table. The setupDB.sh script is located under `/code/gpkafka/setuptable` folder.
+````
+ast login: Fri Jul 27 23:41:43 UTC 2018 on pts/0
+[gpadmin@gpdbsne ~]$ cd /code/gpkafka/
+[gpadmin@gpdbsne gpkafka]$ ls
+loadcfg1.yaml  loadcfg.yaml  setuptable
+[gpadmin@gpdbsne gpkafka]$ cd setuptable
+[gpadmin@gpdbsne setuptable]$ ./setupDB.sh
+psql:./sample_table.sql:1: NOTICE:  schema "payables" does not exist, skipping
+DROP SCHEMA
+CREATE SCHEMA
+psql:./sample_table.sql:3: NOTICE:  table "expenses" does not exist, skipping
+DROP TABLE
+psql:./sample_table.sql:5: NOTICE:  Table doesn't have 'DISTRIBUTED BY' clause -- Using column named 'id' as the Greenplum Database data distribution key for this table.
+HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sure column(s) chosen are the optimal data distribution key to minimize skew.
+CREATE TABLE
+[gpadmin@gpdbsne setuptable]$
+```
+
+3. Verify the number of records in this table  `payables.expenses` in database `payables_db`
+```
+[gpadmin@gpdbsne setuptable]$ psql -d payables_db;
+psql (8.3.23)
+Type "help" for help.
+
+payables_db=# select count(*) from payables.expenses;
+ count
+-------
+     0
+(1 row)
+
+payables_db=#
+```
+4. Run gpkafka to start the data loading process.
+Make sure you run this command `export PGPASSWORD=pivotal` to set the password.
+Next, you run this command `gpkafka load ./loadcfg.yaml` to begin data loading process.
+
+```
+[gpadmin@gpdbsne ~]$ cd /code/gpkafka/
+.DS_Store      loadcfg1.yaml  loadcfg.yaml   setuptable/    
+[gpadmin@gpdbsne gpkafka]$ export PGPASSWORD=pivotal
+[gpadmin@gpdbsne gpkafka]$ gpkafka load ./loadcfg.yaml
+20180727:23:51:54.928 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/utils/gpfdist/gpfdist.go:64: gpfdist listening on gpdbsne:8080
+20180727:23:51:55.043 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/kafkareader.go:229: partition num=1
+20180727:23:51:55.161 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/kafkareader.go:50: Worker:0 set topic 'topic_for_gpkafka', partition 0, offset 0
+20180727:23:51:55.175 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/job.go:144: Start batch 0
+20180727:23:51:55.288 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/job.go:153: Batch flow read 1000 rows in 30 ms
+20180727:23:51:55.288 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/job.go:154: End batch 0: load 1000 rows
+20180727:23:51:55.288 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/job.go:144: Start batch 1
+20180727:23:51:55.337 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/kafkareader.go:106: Kafka read worker 0 EOF reached, offset 1052, 3 rows left
+20180727:23:51:56.792 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/kafkareader.go:106: Kafka read worker 0 EOF reached, offset 1061, 9 rows left
+20180727:23:51:58.800 gpkafkaload:gpadmin:gpdbsne:000635-[INFO]:- /tmp/build/057f7d3c/gopath/src/github.com/greenplum-db/gpss/kafkaload/kafkareader.go:106: Kafka read worker 0 EOF reached, offset 1070, 9 rows left
+```
+
+
+## How to verify the commits by gpkafka
 Make sure you are accessing GPDB docker instance.
 
-1. Use psql on GPDB docker instance
+1. Use `gpkafka check ./loadcfg.yaml `
 ````
-[gpadmin@gpdbsne gphdfs]$
-hdfs_textsimple; gphdfs]$ psql -U gpadmin -d gphdfs_db -c "select * from gphdfs_hdfs_textsimple;"
-location   | month | num_orders | total_sales
--------------+-------+------------+-------------
-Prague      | Jan   |        101 |     4875.33
- Rome      | Mar   |         87 |     1557.39
- Bangalore | May   |        317 |     8936.99
- Beijing   | Jul   |        411 |    11600.67
-(4 rows)
+[gpadmin@gpdbsne gpkafka]$ cd /code/gpkafka
+[gpadmin@gpdbsne gpkafka]$ gpkafka check ./loadcfg.yaml
+PartitionID	StartTime	EndTime	BeginOffset	EndOffset
+0	2018-07-27T23:54:25Z	2018-07-27T23:54:25Z	1728	1800
+[gpadmin@gpdbsne gpkafka]$
 ```
 
-2. Verify the number of records in this table gphdfs_hdfs_textsimple
-```
-hdfs_textsimple; gphdfs]$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
-count
+
+
+## How to use PSQL to access data that is written by gpkafka
+Make sure you are accessing GPDB docker instance.
+
+1. Use psql on GPDB docker instance to access payables_db.
+````
+[gpadmin@gpdbsne setuptable]$ psql -d payables_db;
+psql (8.3.23)
+Type "help" for help.
+
+payables_db=# select count(*) from payables.expenses;
+ count
 -------
-    4
+     0
 (1 row)
+
+payables_db=#
 ```
+
+2. Verify the number of records in this table payables.expenses
+```
+[gpadmin@gpdbsne setuptable]$ psql -d payables_db;
+psql (8.3.23)
+Type "help" for help.
+
+payables_db=# select count(*) from payables.expenses;
+ count
+-------
+     0
+(1 row)
+
+payables_db=#
+```
+
+
+
+
+
 # Reference:
 [Greenplum product]: https://pivotal.io/pivotal-greenplum
 [Greenplum documentations]: https://https://gpdb.docs.pivotal.io/
