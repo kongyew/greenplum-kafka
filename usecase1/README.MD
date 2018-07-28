@@ -62,9 +62,8 @@ $ docker exec -it Kafka bin/bash
 
 ## Configure Greenplum
 Once you have access to Greenplum docker instance, you can create database, table.
-
 1. Use `su - gpadmin` to create table. The setupDB.sh script is located under `/code/gpkafka/setuptable` folder.
-````
+```
 [gpadmin@gpdbsne ~]$ cd /code/gpkafka/
 [gpadmin@gpdbsne gpkafka]$ ls
 loadcfg1.yaml  loadcfg.yaml  setuptable
