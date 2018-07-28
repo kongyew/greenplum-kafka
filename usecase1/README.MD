@@ -51,7 +51,6 @@ e56cfb32a775        kochanpivotal/gpdb5-pxf           "/docker-entrypoint.…"  
 root@gpdbsne:/#
 
 ```
-
 ### How to access Kafka docker instance:
 You can use this command `docker exec -it Kafka bin/bash` to access Kafka docker instance.
 
@@ -62,64 +61,9 @@ $ docker exec -it Kafka bin/bash
 ```
 
 ## Configure Greenplum
-Once you have access to Greenplum docker instance, you can create database, table with some sample data.
+Once you have access to Greenplum docker instance, you can create database, table.
 
-1. ##### Create sample database with the name "gphdfs_db"
-The scripts to create database and sample data is found at `/code/usercase1/data`.
-
-Next, run the command '/code/usecase1/data/setupDB.sh'
-```
-[gpadmin@gpdbsne gphdfs]$ ./setupDB.sh           
-GRANT
-GRANT
-CREATE EXTERNAL TABLE
-```
-
-3. Verify database and table is created.
-Use the command `su - gpadmin`, followed by `psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"`.  The result shows no records are yet created.
-Example:
-```
-root@gpdbsne:/code/usecase1/data#su - gpadmin
-$
-$ psql -U gpadmin -d gphdfs_db -c "select count(*) from gphdfs_hdfs_textsimple;"
- count
--------
-     0
-(1 row)
-```
-## Configure Kafka
-This section describes how to setup Kafka.
-
-### Setup example data on Kafka
-1. You can use this command `docker exec -it Kafka bin/bash` to access Kafka docker instance.
-For example:
-```
-$ docker exec -it Kafka bin/bash
-[root@Kafka /]#
-```
-2. This script `create_topic.sh` creates sample data for this topic "topic_for_gpkafka".
-```
-[root@kafka:/# cd /code/kafka
-root@kafka:/code/kafka# ls
-consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
-root@kafka:/code/kafka# ./create_topic.sh
-WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
-Created topic "topic_for_gpkafka".
-```
-3. Run this script '/code/kafka/produce_100data.sh ' to generate data
-
-```
-root@kafka:/code/kafka# ls
-consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
-root@kafka:/code/kafka# ./produce_100data.sh
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-```
-
-## How to use gpkafka to load data from Kafka
-Make sure you are accessing GPDB docker instance.
-1. Use `docker exec -it gpdbsne bin/bash` to access GPDB instance.
-
-2. Use `su - gpadmin` to create table. The setupDB.sh script is located under `/code/gpkafka/setuptable` folder.
+1. Use `su - gpadmin` to create table. The setupDB.sh script is located under `/code/gpkafka/setuptable` folder.
 ````
 ast login: Fri Jul 27 23:41:43 UTC 2018 on pts/0
 [gpadmin@gpdbsne ~]$ cd /code/gpkafka/
@@ -152,7 +96,40 @@ payables_db=# select count(*) from payables.expenses;
 
 payables_db=#
 ```
-4. Run gpkafka to start the data loading process.
+
+
+## Configure Kafka
+This section describes how to setup Kafka.
+
+### Setup example data on Kafka
+1. You can use this command `docker exec -it Kafka bin/bash` to access Kafka docker instance.
+For example:
+```
+$ docker exec -it Kafka bin/bash
+[root@Kafka /]#
+```
+2. This script `create_topic.sh` creates sample data for this topic "topic_for_gpkafka".
+```
+[root@kafka:/# cd /code/kafka
+root@kafka:/code/kafka# ls
+consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
+root@kafka:/code/kafka# ./create_topic.sh
+WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+Created topic "topic_for_gpkafka".
+```
+3. Run this script '/code/kafka/produce_100data.sh ' to generate data
+
+```
+root@kafka:/code/kafka# ls
+consume_data.sh  create_topic.sh  produce_100data.sh  produce_data.sh  quickstart  sample_data.csv
+root@kafka:/code/kafka# ./produce_100data.sh
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+```
+
+## How to use gpkafka to load data from Kafka
+Make sure you are accessing GPDB docker instance.
+1. Use `docker exec -it gpdbsne bin/bash` to access GPDB instance.
+2. Run gpkafka to start the data loading process.
 Make sure you run this command `export PGPASSWORD=pivotal` to set the password.
 Next, you run this command `gpkafka load ./loadcfg.yaml` to begin data loading process.
 
