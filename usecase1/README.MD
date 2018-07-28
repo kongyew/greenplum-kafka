@@ -150,9 +150,8 @@ Next, you run this command `gpkafka load ./loadcfg.yaml` to begin data loading p
 
 ## How to verify the commits by gpkafka
 Make sure you are accessing GPDB docker instance.
-
 1. Use `gpkafka check ./loadcfg.yaml `
-````
+```
 [gpadmin@gpdbsne gpkafka]$ cd /code/gpkafka
 [gpadmin@gpdbsne gpkafka]$ gpkafka check ./loadcfg.yaml
 PartitionID	StartTime	EndTime	BeginOffset	EndOffset
