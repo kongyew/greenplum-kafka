@@ -65,7 +65,6 @@ Once you have access to Greenplum docker instance, you can create database, tabl
 
 1. Use `su - gpadmin` to create table. The setupDB.sh script is located under `/code/gpkafka/setuptable` folder.
 ````
-ast login: Fri Jul 27 23:41:43 UTC 2018 on pts/0
 [gpadmin@gpdbsne ~]$ cd /code/gpkafka/
 [gpadmin@gpdbsne gpkafka]$ ls
 loadcfg1.yaml  loadcfg.yaml  setuptable
@@ -81,8 +80,7 @@ HINT:  The 'DISTRIBUTED BY' clause determines the distribution of data. Make sur
 CREATE TABLE
 [gpadmin@gpdbsne setuptable]$
 ```
-
-3. Verify the number of records in this table  `payables.expenses` in database `payables_db`
+2. Verify the number of records in this table  `payables.expenses` in database `payables_db`
 ```
 [gpadmin@gpdbsne setuptable]$ psql -d payables_db;
 psql (8.3.23)
