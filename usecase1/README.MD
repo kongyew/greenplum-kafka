@@ -166,7 +166,7 @@ PartitionID	StartTime	EndTime	BeginOffset	EndOffset
 Make sure you are accessing GPDB docker instance.
 
 1. Use psql on GPDB docker instance to access payables_db.
-````
+```
 [gpadmin@gpdbsne setuptable]$ psql -d payables_db;
 psql (8.3.23)
 Type "help" for help.
