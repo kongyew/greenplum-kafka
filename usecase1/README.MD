@@ -8,7 +8,7 @@ This [repository](https://github.com/kongyew/greenplum-kafka) demonstrates how t
 
 # Table of Contents
 1. [Pre-requisites](#Pre-requisites)
-2. [Starting Docker-compose](#Starting Docker-compose)
+2. [Start Docker-compose](#Start-Docker-compose)
 3. [Configure Greenplum](#Configure-Greenplum)
 4. [Configure Kafka](#Configure-Kafka)
 
@@ -19,7 +19,7 @@ This [repository](https://github.com/kongyew/greenplum-kafka) demonstrates how t
 - [Kafka docker image](https://hub.docker.com/u/confluentinc/)
 - [GPDB 5.x OSS docker image](https://hub.docker.com/r/kochanpivotal/gpdb5oss/)
 
-## Starting Docker-compose
+## Start Docker-compose
 Once you have cloned this repository, you can run the command  `./runDocker.sh -t usecase1 -c up`, in order to start both Greenplum and Kafka docker instances.
 
 The assumption: docker and docker-compose are already installed on your machine.
