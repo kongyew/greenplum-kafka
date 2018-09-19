@@ -1,6 +1,8 @@
 # Readme
+This documentation describes use cases for Greenplum with KAFKA
 
-
+Use Cases:
+1. [Using gpkafka to stream data from Kafka topic into Greenplum](#usecase/README.MD)
 
 
 ## Pivotal Greenplum

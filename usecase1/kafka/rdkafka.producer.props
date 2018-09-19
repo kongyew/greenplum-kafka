@@ -1,0 +1,6 @@
+metadata.broker.list=kafka:9092
+security.protocol=ssl
+ssl.key.location=client.key
+ssl.certificate.location=client.crt
+ssl.ca.location=ca.crt
+request.timeout.ms=60000

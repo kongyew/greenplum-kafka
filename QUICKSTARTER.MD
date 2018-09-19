@@ -1,81 +1,12 @@
 # Quick Start:
-This quick start provides a basic guide for deploying a Kafka cluster with Greenplum cluster in your Docker environment. By the end of this quickstart, you can use Apache Kafka to perform ETL processing data into Greenplum cluster.
+This documentation describes a basic guide for deploying a Kafka cluster with Greenplum cluster in your Docker environment. By the end of this quickstart documentation, you can use Apache Kafka to perform ETL processing data into Greenplum cluster.
 
 By default, the configuration is using docker-compose to create multiple docker instances including Kafka, Zookeeper, Schema Registry and Greenplum. This default setup can be reused for multiple use cases. For more advanced environments, you can create copies of this docker-compose. The example uses Docker external volumes to mount directories on your host machine.
 
 # Prerequisites
 1. Docker installed and running.
 
-
 ## Installing & Running Docker
-You can use Docker Compose or Docker client.
-
-Getting Started with Docker Compose
-Getting Started with Docker Client
-Getting Started with Docker Compose
-Docker Compose is a powerful tool that enables you to launch multiple Docker images in a coordinated fashion. It is ideal for platforms like Confluent. Before you get started, you will need to install both the core Docker Engine and Docker Compose. Once you’ve done that, you can follow the steps below to start up the Confluent Platform services.
-
-Create and configure the Docker Machine.
-
-Important: If you are using Docker for Mac or Docker for Windows, you can skip this step.
-
-docker-machine create --driver virtualbox --virtualbox-memory 6000 confluent
-Next, configure your terminal window to attach it to your new Docker Machine:
-
-eval $(docker-machine env confluent)
-Clone the Confluent Platform Docker Images Github Repository.
-
-git clone https://github.com/confluentinc/cp-docker-images
-An example Docker Compose file is included that will start up ZooKeeper and Kafka. Navigate to cp-docker-images/examples/kafka-single-node, where it is located. Alternatively, you can download the file directly from GitHub.
-
-Start the ZooKeeper and Kafka containers in detached mode (-d). Run this command from the directory that contains the docker-compose.yml file. For example, use this path to launch a single node environment:
-
-cd <path-to-cp-docker-images>/examples/kafka-single-node/
-docker-compose up -d
-You should see the following:
-
-Pulling kafka (confluentinc/cp-kafka:latest)...
-latest: Pulling from confluentinc/cp-kafka
-ad74af05f5a2: Already exists
-d02e292e7b5e: Already exists
-8de7f5c81ab0: Already exists
-ed0b76dc2730: Already exists
-cfc44fa8a002: Already exists
-f441b84ed9ba: Already exists
-d42bb38e2f0e: Already exists
-Digest: sha256:61373cf6eca980887164d6fede2552015db31a809c99d6c3d5dfc70867b6cd2d
-Status: Downloaded newer image for confluentinc/cp-kafka:latest
-Creating kafkasinglenode_zookeeper_1 ...
-Creating kafkasinglenode_zookeeper_1 ... done
-Creating kafkasinglenode_kafka_1 ...
-Creating kafkasinglenode_kafka_1 ... done
-Tip: You can run this command to verify that the services are up and running:
-
-docker-compose ps
-You should see the following:
-
-           Name                        Command            State   Ports
------------------------------------------------------------------------
-kafkasinglenode_kafka_1       /etc/confluent/docker/run   Up
-kafkasinglenode_zookeeper_1   /etc/confluent/docker/run   Up
-If the state is not Up, rerun the docker-compose up -d command.
-
-Now check the ZooKeeper logs to verify that ZooKeeper is healthy.
-
-docker-compose logs zookeeper | grep -i binding
-You should see the following:
-
-zookeeper_1  | [2016-07-25 03:26:04,018] INFO binding to port 0.0.0.0/0.0.0.0:32181 (org.apache.zookeeper.server.NIOServerCnxnFactory)
-Next, check the Kafka logs to verify that broker is healthy.
-
-docker-compose logs kafka | grep -i started
-You should see the following:
-
-kafka_1      | [2017-08-31 00:31:40,244] INFO [Socket Server on Broker 1], Started 1 acceptor threads (kafka.network.SocketServer)
-kafka_1      | [2017-08-31 00:31:40,426] INFO [Replica state machine on controller 1]: Started replica state machine with initial state -> Map() (kafka.controller.ReplicaStateMachine)
-kafka_1      | [2017-08-31 00:31:40,436] INFO [Partition state machine on Controller 1]: Started partition state machine with initial state -> Map() (kafka.controller.PartitionStateMachine)
-kafka_1      | [2017-08-31 00:31:40,540] INFO [Kafka Server 1], started (kafka.server.KafkaServer)
-Test the broker by following these instructions.
 
 Now you can take this basic deployment for a test drive. You’ll verify that the broker is functioning normally by creating a topic and producing data to it. You’ll use the client tools directly from another Docker container.
 

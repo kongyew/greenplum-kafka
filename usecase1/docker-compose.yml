@@ -131,7 +131,7 @@ services:
   #     - "localhost: 127.0.0.1"
   gpdb:
         #image: "kochanpivotal/gpdb5oss:latest"
-        image: "kochanpivotal/gpdb5-pxf"
+        image: "kochanpivotal/gpdb5"
         command: bin/bash
         hostname: "gpdbsne"
         container_name: gpdbsne
@@ -156,6 +156,22 @@ services:
               aliases:
                 - gpdbsne
                 - gpdbsne.localdomain.com
+  librdkafka:
+        build:
+          context: .
+          dockerfile: kafka/dockerfile_librdkafka
+        command: bash
+        hostname: "librdkafka"
+        container_name: librdkafka
+        volumes:
+         - .:/code
+        tty: true
+        privileged: true
+        networks:
+            mynetwork:
+              aliases:
+                - librdkafka
+                - librdkafka.localdomain.com
 networks:
     mynetwork:
       driver: bridge

@@ -20,8 +20,8 @@ KAFKA:
       SCHEMA: payables
       TABLE: expenses
    COMMIT:
-      MAX_ROW: 1000
-      MINIMAL_INTERVAL: 30000
+      MAX_ROW: 100000
+      MINIMAL_INTERVAL: 1000
 
 
    # OUTPUT:
