@@ -10,7 +10,8 @@ RUN make install
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 
 
-RUN apk update && apk upgrade && \ # Make info file about this build
+# Make info file about this build
+RUN apk update && apk upgrade && \
   mkdir -p /etc/BUILDS/ && \
   printf "Build of nimmis/alpine-golang:1.7, date: %s\n"  `date -u +"%Y-%m-%dT%H:%M:%SZ"` > /etc/BUILDS/alpine-golang && \
 

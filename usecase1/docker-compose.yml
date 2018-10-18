@@ -156,22 +156,22 @@ services:
               aliases:
                 - gpdbsne
                 - gpdbsne.localdomain.com
-  librdkafka:
-        build:
-          context: .
-          dockerfile: kafka/dockerfile_librdkafka
-        command: bash
-        hostname: "librdkafka"
-        container_name: librdkafka
-        volumes:
-         - .:/code
-        tty: true
-        privileged: true
-        networks:
-            mynetwork:
-              aliases:
-                - librdkafka
-                - librdkafka.localdomain.com
+  # librdkafka:
+  #       build:
+  #         context: .
+  #         dockerfile: kafka/dockerfile_librdkafka
+  #       command: bash
+  #       hostname: "librdkafka"
+  #       container_name: librdkafka
+  #       volumes:
+  #        - .:/code
+  #       tty: true
+  #       privileged: true
+  #       networks:
+  #           mynetwork:
+  #             aliases:
+  #               - librdkafka
+  #               - librdkafka.localdomain.com
 networks:
     mynetwork:
       driver: bridge
