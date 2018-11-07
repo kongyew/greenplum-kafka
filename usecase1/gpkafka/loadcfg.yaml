@@ -8,7 +8,7 @@ KAFKA:
          BROKERS: kafka:9092
          TOPIC: topic_for_gpkafka
       COLUMNS:
-         - NAME: cust_id
+         - NAME: id
            TYPE: int
          - NAME: month
            TYPE: int
